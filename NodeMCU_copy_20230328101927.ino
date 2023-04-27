@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 WiFiServer server(80);  //Initialize the server on Port 80
 
-//int LED_PIN = 2; //or 16; //same thing
 int LED_PIN_OFF = 0; // use GPIO0 (D3) for the LED
 int LED_PIN_ON = 14; // use GPIO14 (D5) for the second LED
 
@@ -16,10 +15,9 @@ void setup() {
   IPAddress HTTPS_ServerIP = WiFi.softAPIP();  // Obtain the IP of the Server
   Serial.print("Server IP is: ");              // Print the IP to the monitor window
   Serial.println(HTTPS_ServerIP);
-  //lcd.print(HTTPS_ServerIP);
   pinMode(LED_PIN_ON, OUTPUT); 
   pinMode(LED_PIN_OFF, OUTPUT);
-  digitalWrite(LED_PIN_ON, LOW);  //Initial state is OFF
+  digitalWrite(LED_PIN_ON, LOW);  //Initial state is OFF, THIS STAYS OFF
   digitalWrite(LED_PIN_OFF, LOW);
 }
 
@@ -31,19 +29,12 @@ void loop() {
   }
   //Looking under the hood
   Serial.println("Connected");
-  //Read what the browser has sent into a String class and print the request to the monitor
-  //only interested in first line so replace....Enter the following in the address field of your
-  //browser http://192.168.4.1/PARAM.
-  //The browser sends a GET request to the server. Notice "/PARAM" following the GET request. Off all the
-  //text sent we are only interested in the first line of the request. Thus we replace the code
-  //String request = client.readString(); with String request = client.readStringUntil('\r');
-  String request = client.readStringUntil('\r');
+    String request = client.readStringUntil('\r');
   //Looking under the hood
   Serial.println(request);
-  //Handle the Request
   //In the address bar of your browse type the following URL:
   //http://192.168.4.1/off The LED on the ESP8266-E12 will turn OFF.
-  //Then type the following URL:http://192.168.4.1/on
+  //Then type the following URL:http://192.168.4.1/on or press the on screen buttons
   if (request.indexOf("/off") != -1) {
     digitalWrite(LED_PIN_OFF, HIGH);
     delay(3000);
@@ -65,8 +56,6 @@ void loop() {
   s += "<br><br><input type=\"button\" name=\"b1\" value=\"Turn LED  ON\" onclick=\"location.href='/on'\" style=\"font-size: 24px; padding: 10px 20px;\">";
   s += "<br><br>";
   s += "<br><br><input type=\"button\" name=\"b1\" value=\"Turn LED OFF\" onclick=\"location.href='/off'\" style=\"font-size: 24px; padding: 10px 20px;\">";
-  //s += "<br><br><input type=\"text\" name=\"b2\">";
-  //s += "<input type=\"submit\" value=\"Upload Text \" onclick=\"location.href='>%b2%<'\">";
   s += "</html>\n";
   Serial.println(request);
   client.flush();   //clear previous info in the stream
